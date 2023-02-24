@@ -3,23 +3,52 @@ import LeftArrow from "./svgIcons/LeftArrow";
 import RightArrow from "./svgIcons/RightArrow";
 import SnowFlake from "./svgIcons/SnowFlake";
 import RainDrop from "./svgIcons/RainDrop";
+import { getIconCode, getImgUrl } from "../utils/helpers";
+import { ICONS_DESCRIP_MAP } from "../utils/iconMap";
 
-export default function HourlyWeather() {
-  const array = Array.from({ length: 10 }, (_, index) => ({
-    index: index,
-    icon: "☁️",
-    temp: "6",
-    feelsLike: "4",
-    desc: "Cloudy",
-    snow: index + 1,
-    rain: "1",
-    time: "12",
-  }));
-
+export default function HourlyWeather({
+  hourlyWeather,
+  dailyWeather,
+  timezone,
+  dayIndex,
+}) {
   const maxScrollWidth = useRef(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const carousel = useRef(null);
+
+  const hoursArray = [
+    [0, 25],
+    [25, 49],
+    [49, 73],
+    [73, 97],
+    [97, 121],
+    [121, 145],
+    [145, 169],
+    [169, 193],
+    [193, 217],
+    [217, 240],
+  ];
+
+  const localTimeNow = new Intl.DateTimeFormat("en-CA", {
+    hour: "numeric",
+    hour12: false,
+    timeZone: timezone,
+  }).format(new Date());
+
+  let selectedHourlyWeather = null;
+
+  if (dayIndex === 0) {
+    selectedHourlyWeather = hourlyWeather.slice(
+      Number(localTimeNow),
+      hoursArray[0][1]
+    );
+  } else {
+    selectedHourlyWeather = hourlyWeather.slice(
+      hoursArray[dayIndex][0],
+      hoursArray[dayIndex][1]
+    );
+  }
 
   const movePrev = () => {
     if (currentIndex > 0) {
@@ -61,17 +90,17 @@ export default function HourlyWeather() {
       : 0;
   }, []);
 
-  useEffect(() => {
-    const handleWindowResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
+  // useEffect(() => {
+  //   const handleWindowResize = () => {
+  //     setWindowWidth(window.innerWidth);
+  //   };
 
-    window.addEventListener("resize", handleWindowResize);
+  //   window.addEventListener("resize", handleWindowResize);
 
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  });
+  //   return () => {
+  //     window.removeEventListener("resize", handleWindowResize);
+  //   };
+  // });
 
   return (
     <section className="mt-2">
@@ -85,28 +114,72 @@ export default function HourlyWeather() {
           className="h-16 w-16 px-4"
         />
         <div
-          className="w-full snap-x snap-mandatory overflow-hidden scroll-smooth"
+          className="w-full snap-x snap-mandatory overflow-hidden overflow-x-scroll scroll-smooth"
           ref={carousel}
         >
           <div className="flex">
-            {array.map((item) => {
+            {selectedHourlyWeather.map((item, index) => {
+              const iconCode = getIconCode(
+                dailyWeather[dayIndex].sunRise,
+                dailyWeather[dayIndex].sunSet,
+                timezone,
+                item.icon,
+                item.timeStamp
+              );
+
+              const iconDescription = ICONS_DESCRIP_MAP.get(item.icon);
+
+              const iconUrl = getImgUrl(`../assets/${iconCode}-fill.svg`);
+
+              const localTimeMonth = new Intl.DateTimeFormat("en-CA", {
+                month: "short",
+                day: "numeric",
+              }).format(new Date(item.timeStamp));
+
+              const localTime = new Intl.DateTimeFormat("en-CA", {
+                hour: "numeric",
+                hour12: true,
+              }).format(new Date(item.timeStamp));
+
+              {
+                /* const onClick = () => {
+                console.log(
+                  `Sun rise is ${sunRiseTimeHours} h and ${sunRiseTimeMinutes} min`
+                );
+                console.log(
+                  `sun set time is ${sunSetTimeHours} h and ${sunSetTimeMinutes} min`
+                );
+                console.log(
+                  `local time is ${localTimeHour} h and ${localTimeMinute} min`
+                );
+                console.log(`local time total is${totalLocalTime}`);
+                console.log(`sun rise time total is${totalSunRiseTime}`);
+                console.log(`sun set time total is${totalSunSetTime}`);
+                console.log(`time stamp is ${item.timeStamp}`);
+
+                console.log(reached);
+              }; */
+              }
+
               return (
                 <div
-                  key={item.index}
-                  className="flex min-w-[7.5rem] snap-start flex-col items-center p-2"
+                  key={index}
+                  className="flex min-w-[7.5rem] snap-start flex-col items-center p-2 text-center"
                 >
-                  <p className="text-3xl">{item.icon}</p>
+                  <img src={iconUrl} alt="Icon Code" className="h-10 w-10" />
                   <p className="text-2xl">{item.temp}&deg;</p>
                   <p className="text-xl">Feels: {item.feelsLike}&deg;</p>
-                  <p className="text-[1.1rem]">{item.desc}</p>
-                  <div className="mt-5 flex flex-col gap-2">
+                  <p className="mb-5 mt-2 text-[1.1rem]">{iconDescription}</p>
+                  <div className="flex flex-col gap-2">
                     {item.snow !== 0 && (
                       <div className="flex items-center gap-2">
                         <SnowFlake
                           fill={"black"}
                           className="inline-block h-5 w-5"
                         />
-                        <p className="text-xl leading-none">{item.snow} cm</p>
+                        <p className="text-xl leading-none">
+                          {item.snow.toFixed(1)} cm
+                        </p>
                       </div>
                     )}
                     {item.rain !== 0 && (
@@ -115,11 +188,18 @@ export default function HourlyWeather() {
                           fill={"black"}
                           className="inline-block h-5 w-5"
                         />
-                        <p className="text-xl leading-none">{item.rain} cm</p>
+                        <p className="text-xl leading-none">
+                          {item.rain.toFixed(1)} mm
+                        </p>
                       </div>
                     )}
                   </div>
-                  <p className="mt-2 text-2xl">{item.time} am</p>
+                  <p className="mt-3 text-[1.4rem] font-semibold">
+                    {localTimeMonth}
+                  </p>
+                  <p className="mt-1 text-[1.4rem] font-semibold">
+                    {localTime}
+                  </p>
                 </div>
               );
             })}
@@ -134,76 +214,3 @@ export default function HourlyWeather() {
     </section>
   );
 }
-
-// import { useRef } from "react";
-// import { useEffect } from "react";
-// import { useState } from "react";
-// import LeftArrow from "./LeftArrow";
-// import RightArrow from "./RightArrow";
-
-// export default function HourlyWeather() {
-// 	const array = Array.from({ length: 10 }, (_, index) => ({
-// 		index: index,
-// 		icon: "I",
-// 		temp: "6",
-// 		feelsLike: "4",
-// 		desc: "Cloudy",
-// 		snow: "1cm",
-// 		rain: "1mm",
-// 	}));
-
-// 	const carouselRef = useRef();
-// 	const containerWidth = carouselRef.current?.clientWidth;
-
-// 	const [pos, setPos] = useState(0);
-// 	const [style, setStyle] = useState({
-// 		transform: `translateX(${pos}px)`,
-// 	});
-
-// 	const onBtnClick = (direction) => {
-// 		if (direction === "left") {
-// 			pos >= -95 ? setPos(0) : setPos((x) => x + 285);
-// 		} else {
-// 			pos <= -Math.abs(containerWidth * 2 - 95)
-// 				? setPos(-630)
-// 				: setPos((x) => x - 285);
-// 		}
-// 	};
-
-// 	useEffect(() => {
-// 		setStyle({ transform: `translateX(${pos}px)` });
-// 	}, [pos]);
-
-// 	return (
-// 		<section>
-// 			<h1 className="text-2xl px-16">Daily</h1>
-// 			<div className="w-full flex mt-3">
-// 				<LeftArrow
-// 					onClick={() => onBtnClick("left")}
-// 					className="px-4 h-16 w-16"
-// 				/>
-// 				<div className="overflow-hidden w-full">
-// 					<div className="flex" style={style} ref={carouselRef}>
-// 						{array.map((item) => {
-// 							return (
-// 								<div
-// 									key={item.index}
-// 									className="p-3 pr-12 hover:border-2 hover:cursor-pointer border-slate-300"
-// 								>
-// 									<p>{item.title}</p>
-// 									<p>{item.icon}</p>
-// 									<p>{item.temp}&deg;</p>
-// 									<p>{item.desc}</p>
-// 								</div>
-// 							);
-// 						})}
-// 					</div>
-// 				</div>
-// 				<RightArrow
-// 					onClick={() => onBtnClick("right")}
-// 					className="px-4 h-16 w-16"
-// 				/>
-// 			</div>
-// 		</section>
-// 	);
-// }

@@ -1,7 +1,6 @@
-export default function CircleBar() {
+export default function CircleBar({ percent }) {
   const circleWidth = "120";
   const radius = 55;
-  const percent = 0.66;
 
   const dashArray = radius * Math.PI * 2;
   const dashOffset = dashArray - dashArray * 0.66;
@@ -41,7 +40,7 @@ export default function CircleBar() {
           textAnchor="middle"
           className="text-3xl"
         >
-          {percent * 100}%
+          {percent}%
         </text>
       </svg>
     </>

@@ -1,3 +1,5 @@
+import { ICONS_MAP } from "./iconMap";
+
 export function cleanCurrentWeather({ current_weather, daily, hourly }) {
   const {
     temperature: currentTemp,
@@ -7,10 +9,10 @@ export function cleanCurrentWeather({ current_weather, daily, hourly }) {
   } = current_weather;
 
   const {
-    temperature_2m_max: [highTemp],
-    temperature_2m_min: [lowTemp],
     apparent_temperature_max: [maxFeelsLike],
     apparent_temperature_min: [minFeelsLike],
+    sunrise: [sunRise],
+    sunset: [sunSet],
   } = daily;
 
   const { visibility: visible } = hourly;
@@ -27,11 +29,11 @@ export function cleanCurrentWeather({ current_weather, daily, hourly }) {
     icon,
     currentWindSpeed: Math.round(currentWindSpeed),
     currentWindDirection: Math.round(currentWindDirection),
-    highTemp: Math.round(highTemp),
-    lowTemp: Math.round(lowTemp),
     maxFeelsLike: Math.round(maxFeelsLike),
     minFeelsLike: Math.round(minFeelsLike),
     visibility: visibility(visible),
+    sunRise,
+    sunSet,
   };
 }
 
@@ -68,8 +70,8 @@ export function cleanDailyWeather({ hourly, daily }) {
       windSpeed: daily.windspeed_10m_max[index],
       snowSum: daily.snowfall_sum[index],
       rainSum: daily.rain_sum[index],
-      sunrise: daily.sunrise[index],
-      sunset: daily.sunset[index],
+      sunRise: daily.sunrise[index],
+      sunSet: daily.sunset[index],
       humidity: Math.round(humidityArray[index]),
     };
   });
@@ -88,4 +90,92 @@ export function cleanHourlyWeather({ hourly }) {
       windSpeed: hourly.windspeed_10m[index],
     };
   });
+}
+
+export function getImgUrl(path) {
+  const imgUrl = new URL(path, import.meta.url).href;
+  return imgUrl;
+}
+
+export function getIconCode(
+  sunRiseTime,
+  sunSetTime,
+  timezone,
+  icon,
+  localTime = ""
+) {
+  // const sunset = new Date(sunSetTime);
+  // const sunrise = new Date(sunRiseTime);
+  // // const localTime = new Date();
+
+  // const sunRiseTimeHours = sunrise.getHours();
+  // const sunRiseTimeMinutes = sunrise.getMinutes();
+  // const totalSunRiseTime = sunRiseTimeHours + sunRiseTimeMinutes;
+
+  // const sunSetTimeHours = sunset.getHours();
+  // const sunSetTimeMinutes = sunset.getMinutes();
+  // const totalSunSetTime = sunSetTimeHours + sunSetTimeMinutes;
+
+  const sunRiseTimeHours = new Intl.DateTimeFormat("en-CA", {
+    hour: "numeric",
+    hour12: false,
+  }).format(new Date(sunRiseTime));
+
+  // const sunRiseTimeMinutes = new Intl.DateTimeFormat("en-CA", {
+  //   minute: "numeric",
+  //   hour12: false,
+  // }).format(new Date(sunRiseTime));
+
+  const sunSetTimeHours = new Intl.DateTimeFormat("en-CA", {
+    hour: "numeric",
+    hour12: false,
+  }).format(new Date(sunSetTime));
+
+  // const sunSetTimeMinutes = new Intl.DateTimeFormat("en-CA", {
+  //   minute: "numeric",
+  //   hour12: false,
+  // }).format(new Date(sunRiseTime));
+
+  let localTimeHour;
+  if (localTime === "") {
+    localTimeHour = new Intl.DateTimeFormat("en-CA", {
+      hour: "numeric",
+      hour12: false,
+      timeZone: timezone,
+    }).format(new Date());
+
+    // localTimeMinute = new Intl.DateTimeFormat("en-CA", {
+    //   minute: "numeric",
+    //   hour12: false,
+    //   timeZone: timezone,
+    // }).format(new Date());
+  } else {
+    localTimeHour = new Intl.DateTimeFormat("en-CA", {
+      hour: "numeric",
+      hour12: false,
+    }).format(new Date(localTime));
+
+    // localTimeMinute = new Intl.DateTimeFormat("en-CA", {
+    //   minute: "numeric",
+    //   hour12: false,
+    // }).format(new Date());
+  }
+
+  // const totalLocalTime = Number(localTimeHour) + Number(localTimeMinute);
+  // const totalSunSetTime = Number(sunSetTimeHours) + Number(sunSetTimeMinutes);
+  // const totalSunRiseTime =
+  //   Number(sunRiseTimeHours) + Number(sunRiseTimeMinutes);
+
+  // console.log(`total local time is ${totalLocalTime}`);
+  // console.log(`total sunset time is ${totalSunSetTime}`);
+  // console.log(`total sun rise time is ${totalSunRiseTime}`);
+
+  const iconArray = ICONS_MAP.get(icon);
+  if (iconArray.length !== 1) {
+    return localTimeHour > sunRiseTimeHours && localTimeHour < sunSetTimeHours
+      ? iconArray[0].toString()
+      : iconArray[1].toString();
+  } else {
+    return iconArray[0].toString();
+  }
 }

@@ -1,20 +1,15 @@
 import { useRef, useEffect, useState } from "react";
+import { getImgUrl } from "../utils/helpers";
+import { ICONS_DESCRIP_MAP, ICONS_MAP } from "../utils/iconMap";
 import LeftArrow from "./svgIcons/LeftArrow";
 import RightArrow from "./svgIcons/RightArrow";
+import SnowFlake from "./svgIcons/SnowFlake";
+import RainDrop from "./svgIcons/RainDrop";
 
-export default function DailyWeather() {
-  const array = Array.from({ length: 10 }, (_, index) => ({
-    index: index,
-    title: `Tue ${index + 1}`,
-    icon: "☁️",
-    tempMax: "8",
-    tempMin: "6",
-    desc: "Cloudy",
-  }));
-
+export default function DailyWeather({ dailyWeather, timezone, setDayIndex }) {
   const maxScrollWidth = useRef(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const carousel = useRef(null);
 
@@ -58,17 +53,19 @@ export default function DailyWeather() {
       : 0;
   }, []);
 
-  useEffect(() => {
-    const handleWindowResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
+  // useEffect(() => {
+  //   const handleWindowResize = () => {
+  //     setWindowWidth(window.innerWidth);
+  //   };
 
-    window.addEventListener("resize", handleWindowResize);
+  //   window.addEventListener("resize", handleWindowResize);
 
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  });
+  //   return () => {
+  //     window.removeEventListener("resize", handleWindowResize);
+  //   };
+  // });
+
+  // console.log(initialStateStyle);
 
   return (
     <section className="mt-2">
@@ -76,27 +73,64 @@ export default function DailyWeather() {
       <div className="mt-1 flex w-full">
         <LeftArrow
           onClick={movePrev}
-          disabled={isDisabled("prev") || windowWidth >= 1100}
+          disabled={isDisabled("prev")}
           className="h-16 w-16 px-4"
         />
         <div
-          className="w-full snap-x snap-mandatory overflow-hidden scroll-smooth"
+          className="w-full snap-x snap-mandatory overflow-hidden overflow-x-scroll scroll-smooth"
           ref={carousel}
         >
           <div className="flex">
-            {array.map((item) => {
+            {dailyWeather.map((item, index) => {
+              const iconCode = ICONS_MAP.get(item.icon)[0];
+              const iconUrl = getImgUrl(`../assets/${iconCode}-fill.svg`);
+              const iconDescription = ICONS_DESCRIP_MAP.get(item.icon);
+
+              const time = new Date(item.timeStamp);
+              const localTime = new Intl.DateTimeFormat("en-CA", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                timeZone: timezone,
+              }).format(time);
+
               return (
                 <div
-                  key={item.index}
-                  className="flex min-w-[7rem] snap-start flex-col items-center border-slate-300 p-2 hover:cursor-pointer hover:border-2"
+                  key={index}
+                  className={`flex min-w-[7.5rem] snap-start flex-col items-center gap-2 border-2 border-transparent  p-2 text-center hover:cursor-pointer hover:border-slate-300 `}
+                  onClick={() => setDayIndex(index)}
                 >
-                  <p className="text-2xl">{item.title}</p>
-                  <p className="text-3xl">{item.icon}</p>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-2xl">{item.tempMax}&deg;</p>
-                    <p className="text-xl">{item.tempMin}&deg;</p>
+                  <p className="text-xl">{`${localTime}`}</p>
+                  <img src={iconUrl} alt="Icon Code" className="h-12 w-12" />
+                  <div className="flex items-baseline gap-1">
+                    <p className="text-3xl">{item.highTemp}&deg;</p>
+                    <p className="text-xl">{item.lowTemp}&deg;</p>
                   </div>
-                  <p className="text-[1.1rem]">{item.desc}</p>
+                  <p className="text-[1.1rem]">{iconDescription}</p>
+                  <div className="mt-5 flex flex-col gap-2">
+                    {item.snowSum !== 0 && (
+                      <div className="flex items-center gap-1">
+                        <SnowFlake
+                          fill={"black"}
+                          className="inline-block h-5 w-5"
+                        />
+                        <p className="text-xl leading-none">
+                          {item.snowSum.toFixed(1)} cm
+                        </p>
+                      </div>
+                    )}
+                    {item.rainSum !== 0 && (
+                      <div className="flex gap-1">
+                        <RainDrop
+                          fill={"black"}
+                          className="inline-block h-5 w-5"
+                        />
+                        <p className="text-xl leading-none">
+                          {item.rainSum.toFixed(1)} mm
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -104,7 +138,7 @@ export default function DailyWeather() {
         </div>
         <RightArrow
           onClick={moveNext}
-          disabled={isDisabled("next") || windowWidth >= 1100}
+          disabled={isDisabled("next")}
           className="h-16 w-16 px-4"
         />
       </div>
