@@ -1,15 +1,19 @@
 import { useRef, useEffect, useState } from "react";
-import { getImgUrl } from "../utils/helpers";
+import {
+  convertCMtoInch,
+  convertCtoF,
+  convertMMtoInch,
+  getImgUrl,
+} from "../utils/helpers";
 import { ICONS_DESCRIP_MAP, ICONS_MAP } from "../utils/iconMap";
 import LeftArrow from "./svgIcons/LeftArrow";
 import RightArrow from "./svgIcons/RightArrow";
 import SnowFlake from "./svgIcons/SnowFlake";
 import RainDrop from "./svgIcons/RainDrop";
 
-export default function DailyWeather({ dailyWeather, timezone, setDayIndex }) {
+export default function DailyWeather({ dailyWeather, setDayIndex, imperial }) {
   const maxScrollWidth = useRef(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const carousel = useRef(null);
 
@@ -53,20 +57,6 @@ export default function DailyWeather({ dailyWeather, timezone, setDayIndex }) {
       : 0;
   }, []);
 
-  // useEffect(() => {
-  //   const handleWindowResize = () => {
-  //     setWindowWidth(window.innerWidth);
-  //   };
-
-  //   window.addEventListener("resize", handleWindowResize);
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleWindowResize);
-  //   };
-  // });
-
-  // console.log(initialStateStyle);
-
   return (
     <section className="mt-2">
       <h1 className="mx-12 border-b-2 border-slate-500 pb-2 text-2xl">Daily</h1>
@@ -91,7 +81,6 @@ export default function DailyWeather({ dailyWeather, timezone, setDayIndex }) {
                 weekday: "short",
                 month: "short",
                 day: "numeric",
-                timeZone: timezone,
               }).format(time);
 
               return (
@@ -103,8 +92,18 @@ export default function DailyWeather({ dailyWeather, timezone, setDayIndex }) {
                   <p className="text-xl">{`${localTime}`}</p>
                   <img src={iconUrl} alt="Icon Code" className="h-12 w-12" />
                   <div className="flex items-baseline gap-1">
-                    <p className="text-3xl">{item.highTemp}&deg;</p>
-                    <p className="text-xl">{item.lowTemp}&deg;</p>
+                    <p className="text-3xl">
+                      {imperial
+                        ? Math.round(convertCtoF(item.highTemp))
+                        : Math.round(item.highTemp)}
+                      &deg;
+                    </p>
+                    <p className="text-xl">
+                      {imperial
+                        ? Math.round(convertCtoF(item.lowTemp))
+                        : Math.round(item.lowTemp)}
+                      &deg;
+                    </p>
                   </div>
                   <p className="text-[1.1rem]">{iconDescription}</p>
                   <div className="mt-5 flex flex-col gap-2">
@@ -115,7 +114,10 @@ export default function DailyWeather({ dailyWeather, timezone, setDayIndex }) {
                           className="inline-block h-5 w-5"
                         />
                         <p className="text-xl leading-none">
-                          {item.snowSum.toFixed(1)} cm
+                          {imperial
+                            ? convertCMtoInch(item.snowSum).toFixed(2)
+                            : item.snowSum.toFixed(1)}
+                          {imperial ? " in" : " cm"}
                         </p>
                       </div>
                     )}
@@ -126,7 +128,10 @@ export default function DailyWeather({ dailyWeather, timezone, setDayIndex }) {
                           className="inline-block h-5 w-5"
                         />
                         <p className="text-xl leading-none">
-                          {item.rainSum.toFixed(1)} mm
+                          {imperial
+                            ? convertMMtoInch(item.rainSum).toFixed(2)
+                            : item.rainSum.toFixed(1)}
+                          {imperial ? " in" : " mm"}
                         </p>
                       </div>
                     )}

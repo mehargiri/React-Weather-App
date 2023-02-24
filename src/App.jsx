@@ -9,13 +9,14 @@ import { findCity, findWeather } from "./utils/api";
 
 export default function App() {
   const [cityName, setCityName] = useState("");
+  const [debounceCityName, setDebounceCityName] = useState("");
   const [cityList, setCityList] = useState([]);
+  const [dayIndex, setDayIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingWeather, setIsLoadingWeather] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [foundWeather, setFoundWeather] = useState(false);
-  const [debounceCityName, setDebounceCityName] = useState("");
-  const [dayIndex, setDayIndex] = useState(null);
+  const [imperial, setImperial] = useState(false);
 
   const [weather, setWeather] = useState({
     current: {},
@@ -143,13 +144,15 @@ export default function App() {
 
       {foundWeather && cityList.length === 0 && (
         <>
-          <CurrentWeather currentWeather={weather} />
+          <CurrentWeather
+            currentWeather={weather}
+            imperial={imperial}
+            setImperial={setImperial}
+          />
           <DailyWeather
             dailyWeather={weather.daily}
-            hourlyWeather={weather.hourly}
-            timezone={weather.timezone}
             setDayIndex={setDayIndexDailyWeather}
-            datyIndex={dayIndex}
+            imperial={imperial}
           />
           {dayIndex !== null && (
             <>
@@ -158,6 +161,7 @@ export default function App() {
                 dailyWeather={weather.daily}
                 timezone={weather.timezone}
                 dayIndex={dayIndex}
+                imperial={imperial}
               />
               <div className="flex flex-col sm:flex-row">
                 <DayDetails
@@ -165,7 +169,11 @@ export default function App() {
                   dayIndex={dayIndex}
                   dailyWeather={weather.daily}
                 />
-                <DayCharts dayIndex={dayIndex} dailyWeather={weather.daily} />
+                <DayCharts
+                  dayIndex={dayIndex}
+                  dailyWeather={weather.daily}
+                  imperial={imperial}
+                />
               </div>
             </>
           )}

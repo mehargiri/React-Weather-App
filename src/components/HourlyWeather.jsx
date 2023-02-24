@@ -3,7 +3,13 @@ import LeftArrow from "./svgIcons/LeftArrow";
 import RightArrow from "./svgIcons/RightArrow";
 import SnowFlake from "./svgIcons/SnowFlake";
 import RainDrop from "./svgIcons/RainDrop";
-import { getIconCode, getImgUrl } from "../utils/helpers";
+import {
+  convertCMtoInch,
+  convertCtoF,
+  convertMMtoInch,
+  getIconCode,
+  getImgUrl,
+} from "../utils/helpers";
 import { ICONS_DESCRIP_MAP } from "../utils/iconMap";
 
 export default function HourlyWeather({
@@ -11,10 +17,10 @@ export default function HourlyWeather({
   dailyWeather,
   timezone,
   dayIndex,
+  imperial,
 }) {
   const maxScrollWidth = useRef(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const carousel = useRef(null);
 
   const hoursArray = [
@@ -90,18 +96,6 @@ export default function HourlyWeather({
       : 0;
   }, []);
 
-  // useEffect(() => {
-  //   const handleWindowResize = () => {
-  //     setWindowWidth(window.innerWidth);
-  //   };
-
-  //   window.addEventListener("resize", handleWindowResize);
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleWindowResize);
-  //   };
-  // });
-
   return (
     <section className="mt-2">
       <h1 className="mx-12 border-b-2 border-slate-500 pb-2 text-2xl">
@@ -141,34 +135,25 @@ export default function HourlyWeather({
                 hour12: true,
               }).format(new Date(item.timeStamp));
 
-              {
-                /* const onClick = () => {
-                console.log(
-                  `Sun rise is ${sunRiseTimeHours} h and ${sunRiseTimeMinutes} min`
-                );
-                console.log(
-                  `sun set time is ${sunSetTimeHours} h and ${sunSetTimeMinutes} min`
-                );
-                console.log(
-                  `local time is ${localTimeHour} h and ${localTimeMinute} min`
-                );
-                console.log(`local time total is${totalLocalTime}`);
-                console.log(`sun rise time total is${totalSunRiseTime}`);
-                console.log(`sun set time total is${totalSunSetTime}`);
-                console.log(`time stamp is ${item.timeStamp}`);
-
-                console.log(reached);
-              }; */
-              }
-
               return (
                 <div
                   key={index}
                   className="flex min-w-[7.5rem] snap-start flex-col items-center p-2 text-center"
                 >
                   <img src={iconUrl} alt="Icon Code" className="h-10 w-10" />
-                  <p className="text-2xl">{item.temp}&deg;</p>
-                  <p className="text-xl">Feels: {item.feelsLike}&deg;</p>
+                  <p className="text-2xl">
+                    {imperial
+                      ? Math.round(convertCtoF(item.temp))
+                      : Math.round(item.temp)}
+                    &deg;
+                  </p>
+                  <p className="text-xl">
+                    Feels:{" "}
+                    {imperial
+                      ? Math.round(convertCtoF(item.feelsLike))
+                      : Math.round(item.feelsLike)}
+                    &deg;
+                  </p>
                   <p className="mb-5 mt-2 text-[1.1rem]">{iconDescription}</p>
                   <div className="flex flex-col gap-2">
                     {item.snow !== 0 && (
@@ -178,7 +163,10 @@ export default function HourlyWeather({
                           className="inline-block h-5 w-5"
                         />
                         <p className="text-xl leading-none">
-                          {item.snow.toFixed(1)} cm
+                          {imperial
+                            ? convertCMtoInch(item.snow).toFixed(2)
+                            : item.snow.toFixed(1)}
+                          {imperial ? " in" : " cm"}
                         </p>
                       </div>
                     )}
@@ -189,7 +177,10 @@ export default function HourlyWeather({
                           className="inline-block h-5 w-5"
                         />
                         <p className="text-xl leading-none">
-                          {item.rain.toFixed(1)} mm
+                          {imperial
+                            ? convertMMtoInch(item.rain).toFixed(2)
+                            : item.rain.toFixed(1)}
+                          {imperial ? " in" : " mm"}
                         </p>
                       </div>
                     )}

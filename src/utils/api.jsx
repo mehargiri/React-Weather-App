@@ -62,8 +62,6 @@ export async function findWeather(
   let data = null;
   let error = null;
 
-  // console.log(currentDate.toISOString().split("T"));
-
   try {
     const response = await fetch(API_ENDPOINT + params);
     const query = await response.json();

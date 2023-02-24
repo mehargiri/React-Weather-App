@@ -9,14 +9,12 @@ specifiers:
   prettier: ^2.8.4
   prettier-plugin-tailwindcss: ^0.2.3
   react: ^18.2.0
-  react-circular-progressbar: ^2.1.0
   react-dom: ^18.2.0
   tailwindcss: ^3.2.7
   vite: ^4.1.0
 
 dependencies:
   react: 18.2.0
-  react-circular-progressbar: 2.1.0_react@18.2.0
   react-dom: 18.2.0_react@18.2.0
 
 devDependencies:
@@ -864,14 +862,6 @@ packages:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
     dev: true
-
-  /react-circular-progressbar/2.1.0_react@18.2.0:
-    resolution: {integrity: sha512-xp4THTrod4aLpGy68FX/k1Q3nzrfHUjUe5v6FsdwXBl3YVMwgeXYQKDrku7n/D6qsJA9CuunarAboC2xCiKs1g==}
-    peerDependencies:
-      react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      react: 18.2.0
-    dev: false
 
   /react-dom/18.2.0_react@18.2.0:
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
