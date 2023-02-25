@@ -29,7 +29,7 @@ export default function CurrentWeather({
 
   const iconDescription = ICONS_DESCRIP_MAP.get(currentWeather.current.icon);
 
-  const iconUrl = getImgUrl(`../assets/${iconCode}-fill.svg`);
+  const iconUrl = getImgUrl(`./${iconCode}-fill.svg`);
   return (
     <section className="mt-5 flex flex-col items-center gap-3">
       <h1 className="text-4xl">

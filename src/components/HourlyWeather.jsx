@@ -123,7 +123,7 @@ export default function HourlyWeather({
 
               const iconDescription = ICONS_DESCRIP_MAP.get(item.icon);
 
-              const iconUrl = getImgUrl(`../assets/${iconCode}-fill.svg`);
+              const iconUrl = getImgUrl(`./${iconCode}-fill.svg`);
 
               const localTimeMonth = new Intl.DateTimeFormat("en-CA", {
                 month: "short",
