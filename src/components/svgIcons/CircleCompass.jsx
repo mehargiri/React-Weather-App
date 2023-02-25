@@ -1,9 +1,11 @@
+import Compass from "./Compass";
+
 export default function CircleCompass() {
   const circleWidth = "120";
   const radius = 55;
 
   const dashArray = radius * Math.PI * 2;
-  const dashOffset = dashArray - dashArray * 0.66;
+  // const dashOffset = dashArray - dashArray * 0.66;
   return (
     <>
       <svg

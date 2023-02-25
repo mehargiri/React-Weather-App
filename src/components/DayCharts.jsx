@@ -33,7 +33,7 @@ export default function DayCharts({ dayIndex, dailyWeather, imperial }) {
         <p className="text-2xl">Wind</p>
         <CircleCompass />
         <Compass
-          className="absolute top-20 left-10 h-16 w-16"
+          className="absolute top-[4.8rem] left-[2.2rem] h-14 w-14"
           amount={`${dailyWeather[dayIndex].windDirection}`}
         />
         <p className="text-2xl">
