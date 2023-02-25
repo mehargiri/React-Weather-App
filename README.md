@@ -29,7 +29,7 @@ Open Meteo API is used to retrieve weather data as well as city names
 
 ### Links
 
-- Live Site URL: [Add live site URL here]()
+- Live Site URL: [React Weather App](https://mehargiri.github.io/React-Weather-App/)
 
 ## My process
 
