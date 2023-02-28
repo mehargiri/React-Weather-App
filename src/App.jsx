@@ -154,6 +154,11 @@ export default function App() {
             setDayIndex={setDayIndexDailyWeather}
             imperial={imperial}
           />
+          {dayIndex === null && (
+            <p className="mt-6 text-center text-2xl">
+              Click on any day for more detailed weather forecast
+            </p>
+          )}
           {dayIndex !== null && (
             <>
               <HourlyWeather

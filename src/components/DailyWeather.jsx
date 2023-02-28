@@ -76,12 +76,8 @@ export default function DailyWeather({ dailyWeather, setDayIndex, imperial }) {
               const iconUrl = getImgUrl(`./${iconCode}-fill.svg`);
               const iconDescription = ICONS_DESCRIP_MAP.get(item.icon);
 
-              const time = new Date(item.timeStamp);
-              const localTime = new Intl.DateTimeFormat("en-CA", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              }).format(time);
+              const time = new Date(item.timeStamp).toUTCString();
+              const localTime = time.split(" ").slice(0, 3).join(" ");
 
               return (
                 <div

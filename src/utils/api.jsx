@@ -45,8 +45,9 @@ export async function findWeather(
   country = ""
 ) {
   const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 1);
   const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + 9);
+  futureDate.setDate(futureDate.getDate() + 8);
 
   const API_ENDPOINT =
     "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,snowfall,weathercode,visibility,windspeed_10m,winddirection_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,rain_sum,snowfall_sum,windspeed_10m_max,winddirection_10m_dominant&timezone=auto&";
