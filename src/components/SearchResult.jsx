@@ -13,7 +13,14 @@ export default function SearchResult({
     <button
       className="z-10 flex-grow py-1 px-8 text-lg hover:bg-slate-200 "
       onClick={() => {
-        getWeather(data.lat, data.long, data.place, data.state, data.country);
+        getWeather(
+          data.lat,
+          data.long,
+          data.timezone,
+          data.place,
+          data.state,
+          data.country
+        );
         changeCityList([]);
         setCityName("");
       }}

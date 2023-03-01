@@ -58,9 +58,16 @@ export default function App() {
     fetchData();
   }, [debounceCityName]);
 
-  const getWeather = async (lat, long, place, state, country) => {
+  const getWeather = async (lat, long, timezone, place, state, country) => {
     setIsLoadingWeather(true);
-    const { error, data } = await findWeather(lat, long, place, state, country);
+    const { error, data } = await findWeather(
+      lat,
+      long,
+      timezone,
+      place,
+      state,
+      country
+    );
     setIsLoadingWeather(false);
 
     if (error !== null) {

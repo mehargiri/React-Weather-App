@@ -138,6 +138,22 @@ export function getIconCode(
   }
 }
 
+export function convertUTCtoISOTimezone(date, timezone) {
+  const year = Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    timeZone: timezone,
+  }).format(date);
+  const month = Intl.DateTimeFormat("en-CA", {
+    month: "2-digit",
+    timeZone: timezone,
+  }).format(date);
+  const day = Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    timeZone: timezone,
+  }).format(date);
+  return `${year}-${month}-${day}`;
+}
+
 export function convertCtoF(value) {
   const result = value * (9 / 5) + 32;
   return result;

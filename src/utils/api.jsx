@@ -2,6 +2,7 @@ import {
   cleanCurrentWeather,
   cleanDailyWeather,
   cleanHourlyWeather,
+  convertUTCtoISOTimezone,
 } from "./helpers";
 
 export async function findCity(city) {
@@ -26,6 +27,7 @@ export async function findCity(city) {
           country: item.country,
           lat: item.latitude,
           long: item.longitude,
+          timezone: item.timezone,
         };
       });
       data = newData;
@@ -40,14 +42,17 @@ export async function findCity(city) {
 export async function findWeather(
   lat,
   long,
+  timezone,
   place = "",
   state = "",
   country = ""
 ) {
   const currentDate = new Date();
-  currentDate.setDate(currentDate.getDate() - 1);
   const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + 8);
+  futureDate.setDate(futureDate.getDate() + 9);
+
+  const currentDateTimezone = convertUTCtoISOTimezone(currentDate, timezone);
+  const futureDateTimezone = convertUTCtoISOTimezone(futureDate, timezone);
 
   const API_ENDPOINT =
     "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,rain,snowfall,weathercode,visibility,windspeed_10m,winddirection_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,rain_sum,snowfall_sum,windspeed_10m_max,winddirection_10m_dominant&timezone=auto&";
@@ -55,8 +60,8 @@ export async function findWeather(
   const params = new URLSearchParams({
     latitude: lat,
     longitude: long,
-    start_date: currentDate.toISOString().split("T")[0],
-    end_date: futureDate.toISOString().split("T")[0],
+    start_date: currentDateTimezone,
+    end_date: futureDateTimezone,
     current_weather: true,
   });
 
@@ -71,7 +76,7 @@ export async function findWeather(
       current: cleanCurrentWeather(query),
       daily: cleanDailyWeather(query),
       hourly: cleanHourlyWeather(query),
-      timezone: query.timezone,
+      timezone,
       place,
       state,
       country,
