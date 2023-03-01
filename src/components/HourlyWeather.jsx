@@ -92,7 +92,7 @@ export default function HourlyWeather({
 
   useEffect(() => {
     maxScrollWidth.current = carousel.current
-      ? carousel.current.scrollWidth - carousel.current.offsetWidth
+      ? carousel.current.scrollWidth
       : 0;
   }, []);
 
