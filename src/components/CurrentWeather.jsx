@@ -29,9 +29,11 @@ export default function CurrentWeather({
 
 	const iconDescription = ICONS_DESCRIP_MAP.get(currentWeather.current.icon);
 
-	const iconUrl = getImgUrl(`/${iconCode}-fill.svg`);
-
-	console.log(`iconUrl is ${iconUrl}`);
+	const repo =
+		import.meta.env.MODE === "production"
+			? `/${import.meta.env.VITE_REPO}`
+			: "";
+	const iconUrl = getImgUrl(`${repo}/${iconCode}-fill.svg`);
 
 	return (
 		<section className="mt-5 flex flex-col items-center gap-3">

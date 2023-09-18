@@ -73,7 +73,11 @@ export default function DailyWeather({ dailyWeather, setDayIndex, imperial }) {
 					<div className="flex">
 						{dailyWeather.map((item, index) => {
 							const iconCode = ICONS_MAP.get(item.icon)[0];
-							const iconUrl = getImgUrl(`/${iconCode}-fill.svg`);
+							const repo =
+								import.meta.env.MODE === "production"
+									? `/${import.meta.env.VITE_REPO}`
+									: "";
+							const iconUrl = getImgUrl(`${repo}/${iconCode}-fill.svg`);
 							const iconDescription = ICONS_DESCRIP_MAP.get(item.icon);
 
 							const time = new Date(item.timeStamp).toUTCString();

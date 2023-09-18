@@ -123,7 +123,11 @@ export default function HourlyWeather({
 
 							const iconDescription = ICONS_DESCRIP_MAP.get(item.icon);
 
-							const iconUrl = getImgUrl(`/${iconCode}-fill.svg`);
+							const repo =
+								import.meta.env.MODE === "production"
+									? `/${import.meta.env.VITE_REPO}`
+									: "";
+							const iconUrl = getImgUrl(`${repo}/${iconCode}-fill.svg`);
 
 							const localTimeMonth = new Intl.DateTimeFormat("en-CA", {
 								month: "short",
